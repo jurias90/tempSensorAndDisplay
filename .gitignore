@@ -1,0 +1,11 @@
+build/
+cmake-build-*/
+
+sdkconfig.old
+sdkconfig
+sdkconfig.defaults
+managed_components/
+
+.idea/
+.vscode/
+.DS_store
