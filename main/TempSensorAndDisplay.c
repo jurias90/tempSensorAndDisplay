@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "display.h"
+#include "bmp180.h"
 #include "driver/i2c_master.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -9,6 +10,7 @@
 
 
 #define SCREEN_ADDRESS 0x3c
+#define BMP180_ADDRESS 0x77
 
 
 void app_main(void)
@@ -39,9 +41,22 @@ void app_main(void)
     display_t* display_p;
     ESP_ERROR_CHECK(display_init(&display_config, &display_p));
 
-    ESP_ERROR_CHECK(display_write_region(display_p,12,33,1,6,glyph_d2,sizeof(glyph_d2)));
-    vTaskDelay(pdMS_TO_TICKS(2000));
+    // ESP_ERROR_CHECK(display_write_region(display_p,12,33,1,6,glyph_d2,sizeof(glyph_d2)));
+    // vTaskDelay(pdMS_TO_TICKS(2000));
+    //
+    // ESP_ERROR_CHECK(display_clear(display_p));
+    // display_deinit(&display_p);
 
-    ESP_ERROR_CHECK(display_clear(display_p));
-    display_deinit(&display_p);
+    bmp180_config_t bmp180_config = {
+        .i2c_bus =  bus_handle,
+        .i2c_address = BMP180_ADDRESS,
+        .speed = 100000,
+    };
+
+    bmp180_t* sensor_p;
+
+    ESP_ERROR_CHECK(bmp180_init(&bmp180_config, &sensor_p));
+
+    int32_t temperature_in_tenths;
+    ESP_ERROR_CHECK(bmp180_read_temperature(sensor_p, &temperature_in_tenths));
 }
